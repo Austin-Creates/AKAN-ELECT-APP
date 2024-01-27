@@ -1,0 +1,19 @@
+{
+  "name": "AKAN-ELECT",
+  "version": "1.0.0",
+  "description": "Your Node.js and Express application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "php-express": "^0.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}
