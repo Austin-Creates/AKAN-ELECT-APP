@@ -1,0 +1,201 @@
+::-webkit-scrollbar {
+    width: 1vw;
+}
+::-webkit-scrollbar-track {
+    background: hsl(120, 3%, 89%);
+    border-radius: 100vw;
+    /* margin-block: .5em; */
+
+}
+::-webkit-scrollbar-thumb {
+    background: hsl(0, 0%, 70%);
+    border: .20em solid hsl(120, 3%, 89%);
+    border-radius: 100vw;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: hsl(0, 0%, 50%);
+}
+
+
+
+
+body {
+    margin: auto 0; /*removes whitespace from the edges*/
+    font-family: Arial;
+    overflow-x: hidden;
+}
+
+.white{
+    background-color: white;
+}
+.green{
+    background-color: #007920;
+}
+
+
+.zone {
+    color:#FFF;
+    font-size:2em;
+    border-radius:4px;
+    transition: all 0.3s linear;
+}
+
+.box:hover {
+     transform: scale(1.1);
+} 
+
+/*NAVIGATION*/
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10; /* Increase the z-index to make the navigation appear above other elements */
+}
+
+.main-nav{
+    display: flex;
+    list-style: none;
+    text-decoration: none;
+    font-size: 0.7em;
+    margin: 0;
+    padding: 0; /* Add padding to remove default padding on the ul */
+    background-color: #007920; /* Add background color to the navigation */
+    z-index: 3;
+}
+
+
+
+@media only screen and (max-width: 600px) {
+    .main-nav {
+        font-size: 0.5em;
+    }
+}
+
+.push {
+    margin-left: auto;
+}
+
+li {
+    padding: 20px;
+}
+
+
+
+/*COVER*/
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50vh; /*Viewport height*/
+    position: relative; /* Add relative positioning to the container */
+}
+
+.cover {
+    width: 100%; /* Set the width to 100% to cover the full viewport width */
+    z-index: -1;
+}
+
+.vts { 
+    color: whitesmoke;
+    position: absolute; /* Change the position to absolute */
+    z-index: 1; /* Increase the z-index to place it above other elements */
+    top: 50%; /* Move the element down by 50% of the container's height */
+    left: 50%; /* Move the element to the center horizontally by 50% of the container's width */
+    transform: translate(-50%, -50%); /* Use translate to center the element */
+    font-family: 'Raleway', sans-serif;
+    font-size: 50px;
+}
+/*VOTING GRID*/
+
+.grid-wrapper {
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+}
+
+/* .box > img {
+    width: 100%
+
+} */
+
+.box {
+    background-color: whitesmoke;
+    padding: 1.5rem;
+    margin: 50px;
+    font-size: 20px;
+    height: 320px; width: 250px;
+    color: black;
+    font-family: 'Palanquin Dark', sans-serif;
+    box-shadow: 10px 10px 10px 10px rgba(0, 0, 0, 0.15);
+    transition: all 2s;
+}
+
+footer {
+    text-align: center;
+    background-color: white;
+
+}
+
+.ftr_text {
+    display: grid;
+    width: 100%; height: 50px;
+    align-items: center;
+    border: rgb(138, 31, 31);
+    border-width: 10px;
+    color: black;
+    font-family: Poppins;
+    font-size: 15px;
+    z-index:1;
+    padding: 10px;
+}
+
+
+/*VOTING TABS */
+
+.poll_box {
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: auto;
+    
+}
+
+.poll__title {
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-align: center;
+    font-family: 'Palanquin Dark', sans-serif;
+    font-weight:200;
+    margin: 10px;
+    text-decoration: none;
+    color:black;
+}
+
+.img_tab {
+    position: relative;
+    width: 100%; height: 200px;
+    margin: auto;
+}
+
+
+p {
+    position: relative;
+    font-family: 'Open Sans';
+    font-size: 15px;
+    font-style: italic;
+    text-align: center;
+    margin: 10px;
+    margin-bottom: 20px;
+}
+
+h4 {
+    text-decoration: none;
+}
+
+
+
+
+
+
+
+
