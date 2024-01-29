@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voting App - Signup</title>
+    <style>
+      body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        width: 300px;
+        max-width: 100%;
+        margin: 20px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+      }
+
+      label {
+        font-weight: bold;
+      }
+
+      input,
+      select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        width: 100%;
+        font-size: 14px;
+      }
+
+      button {
+        background-color: #3498db;
+        color: #fff;
+        padding: 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #2980b9;
+      }
+
+      .button-container {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      #output,
+      #error-output {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #333;
+      }
+
+      /* Additional styles for form title */
+      h2 {
+        background-color: #3498db;
+        color: #fff;
+        margin: 0;
+        padding: 20px;
+        border-radius: 8px 8px 0 0;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Signup</h2>
+      <form id="auth-form">
+        <label for="fullName">Full Name:</label>
+        <input type="text" id="fullName" placeholder="Enter full name" />
+
+        <label for="email">Email:</label>
+        <input type="text" id="email" placeholder="Enter email" />
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="Enter password" />
+
+        <label for="title">Title:</label>
+        <select id="title">
+          <option value="Student">Student</option>
+          <option value="Teacher">Teacher</option>
+        </select>
+
+        <!-- Redesigned button container -->
+        <div class="button-container">
+            <button type="button" onclick="submitForm()">Register</button>
+     
+          <button type="button" onclick="toggleForm()">Switch to Login</button>
+        </div>
+      </form>
+
+      <p id="output"></p>
+      <p id="error-output"></p>
+    </div>
+
+<script>
+    function toggleForm() {
+    // redirct to login page
+      window.location.href = "login.html";
+    }
+  
+    function submitForm() {
+      const formTitle = 'signup'
+      const fullName = document.getElementById("fullName").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const title = document.getElementById("title").value;
+  
+      let apiUrl = "http://localhost:8080";
+  
+      // Make a request to your API for user registration or login
+      fetch(`${apiUrl}/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(
+        { full_name: fullName, email, password, title }
+      
+        ),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("DATA",data)
+            if(data.error){
+                document.getElementById(
+                    "error-output"
+                  ).innerText = `Error: ${data.error}`;
+                  return
+            }
+          const token = data.token;
+  
+          // Store the token and user information in localStorage for subsequent requests
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(data.voter));
+         
+          document.getElementById(
+            "output"
+          ).innerText = `Registration successful for ${fullName || email}!`;
+      
+        })
+        .catch((error) => {
+          document.getElementById(
+            "output"
+          ).innerText = `Error: ${error.message}`;
+        });
+    }
+  </script>
+ 
+  </body>
+</html>

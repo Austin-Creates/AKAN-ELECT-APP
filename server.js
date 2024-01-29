@@ -2,6 +2,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const cors = require("cors");
+const jwt = require("jsonwebtoken");
+const { validationResult } = require("express-validator");
+
+const secretKey = "akanvotingsecretkey";
 
 const Voter = require("./src/models/voterModel");
 const Vote = require("./src/models/voteModel");
@@ -19,6 +24,9 @@ mongoose
 
 const app = express();
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
+app.use(cors());
 
 //ROUTES
 // home route
@@ -29,9 +37,17 @@ app.get("/", (req, res) => {
 // voter signup
 app.post("/signup", async (req, res) => {
   try {
- 
-    // encrypt password
-    //bcrypt password encryption
+    // email validation
+    let email = req.body.email;
+    // example of email extension @akesk.org or @student.akesk.org
+    let emailExtension = email.split("@")[1];
+    let emailValidation =
+      emailExtension === "akesk.org" || emailExtension === "student.akesk.org";
+    console.log(emailValidation);
+    if (!emailValidation) {
+      return res.status(500).send({ error: "Invalid email" });
+    }
+
     req.body.password = bcrypt.hashSync(req.body.password, 10);
     const voter = new Voter(req.body);
     await voter.save();
@@ -44,29 +60,44 @@ app.post("/signup", async (req, res) => {
 // voter login
 app.post("/login", async (req, res) => {
   try {
-    // email validation
-    // bcrypt password decryption
-
-    const voter = await Voter.findOne({ email: req.body.email });
-    if (!voter) {
-      return res.status(404).send({ message: "Voter not found" });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    await bcrypt.compareSync(req.body.password, voter.password).then((result) => {
-        console.log(result);
-        if (result) {
-            res.status(200).send({ voter });
-        } else {
-            res.status(400).send({ message: "Invalid password" });
-        }
-        }
-    );
+    const { email, password } = req.body;
 
+    console.log(email, password);
+
+    // Find the voter by email
+    const voter = await Voter.findOne({ email });
+
+    if (!voter) {
+      return res.status(404).json({ message: "Sorry, Voter not found" });
+    }
+
+    // Compare the provided password with the hashed password
+    const passwordMatch = await bcrypt.compare(password, voter.password);
+
+    console.log(passwordMatch);
+
+    if (passwordMatch) {
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: voter._id, email: voter.email },
+        secretKey,
+        { expiresIn: "1h" }
+      );
+
+      return res.status(200).json({ voter, token });
+    } else {
+      return res.status(401).json({ error: "Invalid password" });
+    }
   } catch (error) {
-    res.status(400).send(error);
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 });
-
 // update voter
 app.put("/voter/:_id", async (req, res) => {
   try {
@@ -100,31 +131,31 @@ app.get("/positions", async (req, res) => {
   try {
     const positions = [
       {
-        position: "Head",
+        position: "head prefect",
       },
       {
-        position: "planning and coordination",
+        position: "planning and coordination prefect",
       },
       {
-        position: "sports",
+        position: "sports prefect",
       },
       {
-        position: "clubs",
+        position: "clubs prefect",
       },
       {
-        position: "finance",
+        position: "finance prefect",
       },
       {
-        position: "resource",
+        position: "resource prefect",
       },
       {
-        position: "events",
+        position: "events prefect",
       },
       {
-        position: "arts",
+        position: "arts prefect",
       },
       {
-        position: "junior",
+        position: "junior prefect",
       },
     ];
     if (!positions) {
@@ -139,6 +170,7 @@ app.get("/positions", async (req, res) => {
 // create a leader
 app.post("/leader", async (req, res) => {
   try {
+    console.log("LEADER BODY REQ", req.body);
     // we check if the leader is in the database
     const voterExistaAsALeader = await Leader.findOne({
       voter: req.body.voter,
@@ -150,28 +182,59 @@ app.post("/leader", async (req, res) => {
 
     const leader = new Leader(req.body);
     await leader.save();
-    res.status(200).send({ leader });
+    res
+      .status(200)
+      .send({
+        leader,
+        message: `Leader has been nominated for ${leader.position}`,
+      });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error);
+  }
+});
+
+// update a leader
+app.put("/leader/:_id", async (req, res) => {
+  try {
+    const updateLeader = await Leader.findByIdAndUpdate(
+      req.params._id,
+      req.body
+    );
+
+    if (!updateLeader) {
+      return res.status(404).send({ message: "Leader not found" });
+    }
+    res.status(200).json({ message: "Leader updated successfully" });
   } catch (error) {
     res.status(400).send(error);
   }
 });
 
 // all leaders
-
-app.get("/leaders", async (req, res) => {
+app.get("/all/leaders", async (req, res) => {
   try {
-     const position = req.params.position;
-     if(position){
-        const leaders = await Leader.find({position}).populate("voter");
-        if (!leaders) {
-          return res.status(404).send({ message: "Leaders not found" });
-        }
-        res.status(200).send({ leaders });
-        }
+    let leaders;
+    const allPositions = await Leader.distinct("position");
+    const voteResults = [];
 
+    for (const position of allPositions) {
+      leaders = await Leader.find({ position }).populate("voter");
+      const totalVotes = leaders.reduce((acc, leader) => acc + leader.vote, 0);
 
-    
-    const leaders = await Leader.find({}).populate("voter");
+      leaders.forEach((leader) => {
+        const percentage =
+          totalVotes !== 0 ? (leader.vote / totalVotes) * 100 : 0;
+        voteResults.push({
+          leader: leader.voter.full_name,
+          vote: leader.vote,
+          position: leader.position,
+          percentage: percentage.toFixed(2), // Limiting to 2 decimal places
+        });
+      });
+    }
+
+    console.log(leaders);
     if (!leaders) {
       return res.status(404).send({ message: "Leaders not found" });
     }
@@ -181,7 +244,18 @@ app.get("/leaders", async (req, res) => {
   }
 });
 
+app.get("/leaders", async (req, res) => {
+  try {
+    const position = req.params.position || req.query.position;
+    console.log(position);
 
+    let leaders = await Leader.find({ position }).populate("voter");
+
+    return res.status(200).send({ leaders });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
 
 app.post("/vote", async (req, res) => {
   try {
@@ -192,58 +266,65 @@ app.post("/vote", async (req, res) => {
     if (!voter) {
       return res.status(404).send({ message: "Voter not found" });
     }
-
-    // we check if the voter has voted before
-    const voterHasVoted = await Vote.findOne({
-      voter: req.body.voter,
-    });
-
-    if (voterHasVoted) {
-        return res.status(404).send({ message: "Voter has voted before" });
-        }
-
     let leader = await Leader.findById(req.body.leader); // john
     console.log(leader);
     if (!leader) {
       return res.status(404).send({ message: "Leader not found" });
     }
 
+    // we check if the voter has voted before
+    const voterHasVoted = await Vote.findOne({
+      voter: req.body.voter,
+      position: leader.position,
+    });
+
+    if (voterHasVoted) {
+      return res
+        .status(404)
+        .send({ message: ` ❌ You have already voted for ${leader.position}` });
+    }
 
     let updateLeadersVote = await Leader.findByIdAndUpdate(req.body.leader, {
       $inc: { vote: 1 },
     });
 
-
     let vote = new Vote({
-        voter: req.body.voter,
-        leader: req.body.leader,
-        });
+      voter: req.body.voter,
+      leader: req.body.leader,
+      position: leader.position,
+    });
 
     await vote.save();
 
-
     if (updateLeadersVote) {
-      res.send({ message: "Vote successful" });
+      res.send({ message: `You have voted for ${leader.position}` });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// all votes
+// all votes with percentage
 app.get("/votes", async (req, res) => {
   try {
-    const all_leaders = await Leader.find({}).populate("voter");
-    console.log(all_leaders);
-    let voteResults = [];
-    all_leaders.forEach((leader) => {
-      console.log(leader);
-      voteResults.push({
-        leader: leader.voter.full_name,
-        vote: leader.vote,
-        position: leader.position,
+    const allPositions = await Leader.distinct("position");
+    const voteResults = [];
+
+    for (const position of allPositions) {
+      const leaders = await Leader.find({ position }).populate("voter");
+      const totalVotes = leaders.reduce((acc, leader) => acc + leader.vote, 0);
+
+      leaders.forEach((leader) => {
+        const percentage =
+          totalVotes !== 0 ? (leader.vote / totalVotes) * 100 : 0;
+        voteResults.push({
+          leader: leader.voter.full_name,
+          vote: leader.vote,
+          position: leader.position,
+          percentage: percentage.toFixed(2), // Limiting to 2 decimal places
+        });
       });
-    });
+    }
 
     res.status(200).send({ voteResults });
   } catch (error) {

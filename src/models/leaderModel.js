@@ -1,8 +1,3 @@
-// leader model
-// voter 
-// position
-// photo
-
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;

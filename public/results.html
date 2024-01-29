@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2024 School Election - Vote Results</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f4f4f4;
+      }
+
+      h1, h2 {
+        text-align: center;
+        color: #333;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .voting-results-container {
+        margin-top: 20px;
+      }
+
+      .position-container {
+        margin-bottom: 20px;
+      }
+
+      .result {
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+        margin-bottom: 10px;
+      }
+
+      .result p {
+        margin: 8px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>2024 SCHOOL ELECTION</h1>
+
+    <div class="container">
+      <h2>Vote Results</h2>
+
+      <div id="votingResults" class="voting-results-container"></div>
+    </div>
+
+    <a href="index.html">Back</a>
+
+    <script>
+      //const apiUrl = "https://2fe3-41-90-64-255.ngrok-free.app";
+      let apiUrl = "http://localhost:8080";
+
+      fetch(`${apiUrl}/votes`)
+        .then(response => response.json())
+        .then(data => {
+          const votingResultsContainer = document.getElementById('votingResults');
+
+          // Group results by position
+          const resultsByPosition = groupBy(data.voteResults, 'position');
+
+          // Loop through the positions
+          Object.keys(resultsByPosition).forEach(position => {
+            const positionContainer = document.createElement('div');
+            positionContainer.classList.add('position-container');
+
+            const positionHeader = document.createElement('h3');
+            positionHeader.textContent = `Position: ${position}`;
+            positionContainer.appendChild(positionHeader);
+
+            // Loop through the results for the current position
+            resultsByPosition[position].forEach(result => {
+              const resultElement = document.createElement('div');
+              resultElement.classList.add('result');
+
+              // Calculate vote percentage
+              const percentage = (result.vote / getTotalVotes(resultsByPosition[position])) * 100;
+
+              resultElement.innerHTML = `
+                <p><strong>Leader:</strong> ${result.leader}</p>
+                <p><strong>Vote Count:</strong> ${result.vote}</p>
+                <p><strong>Percentage:</strong> ${percentage.toFixed(2)}%</p>
+                <progress id="file" value=${percentage.toFixed(1)} max="100">${percentage.toFixed(2)}</progress>
+                <hr>
+              `;
+
+              positionContainer.appendChild(resultElement);
+            });
+
+            votingResultsContainer.appendChild(positionContainer);
+          });
+        })
+        .catch(error => console.error('Error fetching voting results:', error));
+
+      function groupBy(array, key) {
+        return array.reduce((result, item) => {
+          (result[item[key]] = result[item[key]] || []).push(item);
+          return result;
+        }, {});
+      }
+
+      function getTotalVotes(results) {
+        return results.reduce((acc, result) => acc + result.vote, 0);
+      }
+    </script>
+  </body>
+</html>

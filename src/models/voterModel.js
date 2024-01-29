@@ -1,10 +1,3 @@
-// voter model
-// full_name
-// email
-// password
-//photo
-// title
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 

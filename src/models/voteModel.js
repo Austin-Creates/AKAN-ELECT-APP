@@ -1,8 +1,3 @@
-// voter model
-//voter
-// vote
-// leader
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -15,6 +10,10 @@ const voteSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Leader'
     },
+    position:{
+        type: String,
+        required: true,
+    }
     }, {
     timestamps: true,
     });
@@ -28,5 +27,5 @@ module.exports = Vote;
 //    _id: "5f9c7b3d9a6b9b1b6c6c0f4d",
 //     "voter": "5f9c7b3d9a6b9b1b6c6c0f4d",
 //     "leader": "5f9c7b3d9a6b9b1b6c6c0f4d",
-
+//     "position": "president",
 // }
