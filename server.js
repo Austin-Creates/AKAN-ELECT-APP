@@ -5,15 +5,19 @@ const bcrypt = require("bcryptjs");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
+const dotenv = require("dotenv");
+dotenv.config();
 
-const secretKey = "akanvotingsecretkey";
+const secretKey =  process.env.SECRET_KEY;  
 
 const Voter = require("./src/models/voterModel");
 const Vote = require("./src/models/voteModel");
 const Leader = require("./src/models/leaderModel");
 
+const mongodb_url = process.env.MONGO_URL;
+console.log(mongodb_url);
 mongoose
-  .connect("mongodb://127.0.0.1:27017/akanvotingdb", {
+  .connect(mongodb_url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
