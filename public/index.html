@@ -121,8 +121,8 @@
   <a href="login.html">Login</a>
 
     <script>
-        const apiUrl = 'https://akan-elect-app.onrender.com';
-        //let apiUrl = "http://localhost:8080";
+        //const apiUrl = 'https://akan-elect-app.onrender.com';
+        let apiUrl = "http://localhost:8080";
         let user;
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -220,6 +220,12 @@
                 .then((response) => response.json())
                 .then((data) => {
                     document.getElementById('output').innerText = `${JSON.stringify(data.message, null, 2)}`;
+
+                 
+                    // clear the output after 2 seconds
+                    setTimeout(() => {
+                        document.getElementById('output').innerText = '';
+                    }, 2000);
 
                 })
                 .catch((error) => {

@@ -53,14 +53,18 @@
     <div class="container">
       <h2>Vote Results</h2>
 
+      <button onclick="downloadExcel()">Download Excel Report</button>
+      
       <div id="votingResults" class="voting-results-container"></div>
+
+    </div>
     </div>
 
     <a href="index.html">Back</a>
 
     <script>
-      const apiUrl = "https://akan-elect-app.onrender.com";
-      //let apiUrl = "http://localhost:8080";
+      //const apiUrl = "https://akan-elect-app.onrender.com";
+      let apiUrl = "http://localhost:8080";
 
       fetch(`${apiUrl}/votes`)
         .then(response => response.json())
@@ -113,6 +117,25 @@
       function getTotalVotes(results) {
         return results.reduce((acc, result) => acc + result.vote, 0);
       }
+
+
+      function downloadExcel() {
+        // Trigger the API endpoint for Excel download
+        fetch(`${apiUrl}/votes/excel`)
+          .then(response => response.blob())
+          .then(blob => {
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'vote_results.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          })
+          .catch(error => console.error('Error downloading Excel file:', error));
+      }
+   
     </script>
   </body>
 </html>

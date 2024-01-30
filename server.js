@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
+const excelJS = require("exceljs");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -361,6 +362,61 @@ app.get("/voters", async (req, res) => {
   } catch (error) {
     res.status(400).send(error);
   }
+});
+
+
+// votes reult in excel format
+
+app.get("/votes/excel", async (req, res) => {
+  try{
+
+    const allPositions = await Leader.distinct("position");
+    const voteResults = [];
+
+    for (const position of allPositions) {
+      const leaders = await Leader.find({ position }).populate("voter");
+      const totalVotes = leaders.reduce((acc, leader) => acc + leader.vote, 0);
+
+      leaders.forEach((leader) => {
+        const percentage =
+          totalVotes !== 0 ? (leader.vote / totalVotes) * 100 : 0;
+        voteResults.push({
+          leader: leader.voter.full_name,
+          vote: leader.vote,
+          position: leader.position,
+          percentage: percentage.toFixed(2), // Limiting to 2 decimal places
+        });
+      });
+    };
+
+    const workbook = new excelJS.Workbook();
+    const worksheet = workbook.addWorksheet("VotesResults");
+    // [
+    //   {
+    //       "leader": "Arjun Shah",
+    //       "vote": 1,
+    //       "position": "head prefect",
+    //       "percentage": "100.00"
+    //   },
+
+    // ]
+    worksheet.columns = [ 
+      { header: "Leader", key: "leader", width: 30 },
+      { header: "Vote", key: "vote", width: 10 },
+      { header: "Position", key: "position", width: 30 },
+      { header: "Percentage", key: "percentage", width: 30 },
+    ];
+  
+    voteResults.forEach((vote) => { worksheet.addRow(vote) });
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+    workbook.xlsx.write(res).then(() => res.end());
+
+  }catch(error){
+    res.status(500).json({ error: error.message })
+  }
+
 });
 
 app.listen(8080, () => {
