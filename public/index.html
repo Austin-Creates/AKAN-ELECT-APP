@@ -132,7 +132,7 @@
             if (user) {
                 // Display user information on the page
                 const userInfo = document.createElement('p');
-                userInfo.textContent = `🔴 Online: ${user.full_name}`;
+                userInfo.textContent = `🟢 Online: ${user.full_name}`;
                 document.body.insertBefore(userInfo, document.body.firstChild);
             }
         });
