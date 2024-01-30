@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Nomination</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"], input[type="file"], select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #output {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    
+    <h1>Admin Nomination</h1>
+
+    <div class="container">
+        <label for="search">Search Voter:</label>
+        <input type="text" id="search" oninput="searchVoters()" placeholder="Type to search">
+
+        <label for="voter">Select Voter:</label>
+        <select id="voter"></select>
+
+        <label for="photo">Upload Photo URL:</label>
+        <input type="text" id="photo" placeholder="Enter photo URL eg. https://example.com/photo.jpg">
+
+        <label for="position">Select Position:</label>
+        <select id="position"></select>
+
+        <button onclick="nominateLeader()">Nominate Leader</button>
+
+        <div id="output"></div>
+    </div>
+
+    <script>
+         const apiUrl = 'https://akan-elect.onrender.com'; 
+    //    let apiUrl = "http://localhost:8080";
+        let allVoters = [];
+
+        // Fetch positions and populate the position dropdown
+        fetch(`${apiUrl}/positions`)
+            .then((response) => response.json())
+            .then((data) => {
+                const positionDropdown = document.getElementById('position');
+                data.positions.forEach((position) => {
+                    const option = document.createElement('option');
+                    option.value = position.position;
+                    option.textContent = position.position;
+                    positionDropdown.appendChild(option);
+                });
+            })
+            .catch((error) => console.error('Error fetching positions:', error));
+
+        // Fetch the list of voters
+        fetch(`${apiUrl}/voters`)
+            .then((response) => response.json())
+            .then((data) => {
+                allVoters = data.voters;
+                updateVoterDropdown(allVoters);
+            })
+            .catch((error) => console.error('Error fetching voters:', error));
+
+        function searchVoters() {
+            const searchInput = document.getElementById('search').value.toLowerCase();
+            const filteredVoters = allVoters.filter((voter) =>
+                voter.full_name.toLowerCase().includes(searchInput)
+            );
+            updateVoterDropdown(filteredVoters);
+        }
+
+        function updateVoterDropdown(voters) {
+            const voterDropdown = document.getElementById('voter');
+            voterDropdown.innerHTML = ''; // Clear existing options
+
+            voters.forEach((voter) => {
+                const option = document.createElement('option');
+                option.value = voter._id; // Assuming the voter object has an _id property
+                option.textContent = voter.full_name; // Assuming the voter object has a full_name property
+                voterDropdown.appendChild(option);
+            });
+        }
+
+        function nominateLeader() {
+            const voter = document.getElementById('voter').value;
+            const photo = document.getElementById('photo').value;
+            const position = document.getElementById('position').value;
+
+            // Check if a photo is selected
+            if (!photo) {
+                alert('Please select a photo for the nominated leader.');
+                return;
+            }
+
+            // Make a request to your backend to nominate the selected voter as a leader
+            // Modify this part based on your backend API
+            const formData = new FormData();
+            formData.append('voter', voter);
+            formData.append('photo', photo);
+            formData.append('position', position)
+
+
+            console.log('formData', formData);
+
+            fetch(`${apiUrl}/leader`, {
+                method: 'POST',
+                body: JSON.stringify({ voter, photo, position }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    document.getElementById('output').innerText = data.message;
+                })
+                .catch((error) => {
+                    document.getElementById('output').innerText = `Error: ${error.message}`;
+                });
+        }
+    </script>
+</body>
+</html>
