@@ -15,7 +15,7 @@ const Vote = require("./src/models/voteModel");
 const Leader = require("./src/models/leaderModel");
 
 const mongodb_url = process.env.MONGO_URL;
-console.log(mongodb_url);
+
 mongoose
   .connect(mongodb_url, {
     useNewUrlParser: true,
@@ -41,6 +41,10 @@ app.get("/", (req, res) => {
 // voter signup
 app.post("/signup", async (req, res) => {
   try {
+
+    if(!req.body.password || !req.body.email || !req.body.full_name || !req.body.title){
+      return res.status(400).send({ error: "Please fill all fields" });
+    }
     // email validation
     let email = req.body.email;
     // example of email extension @akesk.org or @student.akesk.org
@@ -73,6 +77,10 @@ app.post("/login", async (req, res) => {
 
     console.log(email, password);
 
+    if (!email || !password) {
+      return res.status(400).json({ error: "Please provide an email and password" });
+    }
+
     // Find the voter by email
     const voter = await Voter.findOne({ email });
 
@@ -83,7 +91,7 @@ app.post("/login", async (req, res) => {
     // Compare the provided password with the hashed password
     const passwordMatch = await bcrypt.compare(password, voter.password);
 
-    console.log(passwordMatch);
+    console.log("PASSORD",passwordMatch);
 
     if (passwordMatch) {
       // Generate JWT token
@@ -95,11 +103,11 @@ app.post("/login", async (req, res) => {
 
       return res.status(200).json({ voter, token });
     } else {
-      return res.status(401).json({ error: "Invalid password" });
+      return res.status(500).json({ error: "Invalid password" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).json({ error: error.message });
   }
 });
 // update voter
@@ -175,6 +183,9 @@ app.get("/positions", async (req, res) => {
 app.post("/leader", async (req, res) => {
   try {
     console.log("LEADER BODY REQ", req.body);
+    if(!req.body.voter || !req.body.position || !req.body.photo){
+      return res.status(400).send({ error: "Please fill all fields" });
+    }
     // we check if the leader is in the database
     const voterExistaAsALeader = await Leader.findOne({
       voter: req.body.voter,
@@ -264,6 +275,9 @@ app.get("/leaders", async (req, res) => {
 app.post("/vote", async (req, res) => {
   try {
     console.log(req.body);
+    if(!req.body.voter || !req.body.leader){
+      return res.status(400).send({ error: "Please fill all fields" });
+    }
 
     let voter = await Voter.findById(req.body.voter); // mathew
 

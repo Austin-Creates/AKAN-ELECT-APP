@@ -91,10 +91,10 @@
       <h2>Login</h2>
       <form id="auth-form">
         <label for="email">Email:</label>
-        <input type="text" id="email" placeholder="Enter email" />
+        <input type="text" id="email" placeholder="Enter email"  required/>
 
         <label for="password">Password:</label>
-        <input type="password" id="password" placeholder="Enter password" />
+        <input type="password" id="password" placeholder="Enter password" required />
 
         <!-- Redesigned button container -->
         <div class="button-container">
@@ -120,7 +120,7 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
   
-      let apiUrl = "https://akan-elect-app.onrender.com";
+     let apiUrl = "https://akan-elect-app.onrender.com";
       //let apiUrl = "http://localhost:8080";
   
       // Make a request to your API for user login
@@ -145,14 +145,16 @@
 
           // Store the token in localStorage for subsequent requests
           localStorage.setItem("token", token);
-  
+           if(data.token){
           document.getElementById(
             "login-output"
           ).innerText = `Login successful for ${email}! Redirecting...`;
           setTimeout(() => {
             window.location.href = "index.html";
           }, 2000);
+    }
         })
+    
         .catch((error) => {
           document.getElementById(
             "login-output"

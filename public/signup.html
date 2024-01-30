@@ -131,7 +131,9 @@
       const password = document.getElementById("password").value;
       const title = document.getElementById("title").value;
   
-      let apiUrl = "https://akan-elect-app.onrender.com";
+     let apiUrl = "https://akan-elect-app.onrender.com";
+      //let apiUrl = "http://localhost:8080";
+
   
       // Make a request to your API for user registration or login
       fetch(`${apiUrl}/signup`, {
@@ -159,9 +161,15 @@
           localStorage.setItem("token", token);
           localStorage.setItem("user", JSON.stringify(data.voter));
          
-          document.getElementById(
+          if(data.voter){
+            document.getElementById(
             "output"
           ).innerText = `Registration successful for ${fullName || email}!`;
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 2000);
+          }
+        
       
         })
         .catch((error) => {
