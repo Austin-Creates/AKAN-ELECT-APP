@@ -92,7 +92,7 @@ app.post("/login", async (req, res) => {
     // Compare the provided password with the hashed password
     const passwordMatch = await bcrypt.compare(password, voter.password);
 
-    console.log("PASSORD",passwordMatch);
+    console.log("PASSWORD",passwordMatch);
 
     if (passwordMatch) {
       // Generate JWT token
@@ -144,31 +144,31 @@ app.get("/positions", async (req, res) => {
   try {
     const positions = [
       {
-        position: "head prefect",
+        position: "Head Prefect",
       },
       {
-        position: "planning and coordination prefect",
+        position: "Planning and Coordination Prefect",
       },
       {
-        position: "sports prefect",
+        position: "Sports Prefect",
       },
       {
-        position: "clubs prefect",
+        position: "Clubs Prefect",
       },
       {
-        position: "finance prefect",
+        position: "Finance Prefect",
       },
       {
-        position: "resource prefect",
+        position: "Resource Prefect",
       },
       {
-        position: "events prefect",
+        position: "Events Prefect",
       },
       {
-        position: "arts prefect",
+        position: "Arts Prefect",
       },
       {
-        position: "junior prefect",
+        position: "Junior Representatives",
       },
     ];
     if (!positions) {

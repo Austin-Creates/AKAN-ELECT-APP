@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2024 School Election</title>
+    <title>AKAN STUDENT GVMT ELECTIONS</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -98,13 +98,35 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
+        .link-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .link-buttons a {
+            display: inline-block;
+            background-color: #4CAF50; /* Green */
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+
+        .link-buttons a:hover {
+            background-color: #45A049; /* Darker green */
+        }
     </style>
 </head>
 <body>
-    <h1>2024 SCHOOL ELECTION</h1>
+    <h1>AKAN STUDENT GOVERNMENT ELECTION</h1>
 
     <div class="container">
-        <h2>Vote for Your Leaders</h2>
+        <h2>Vote for Your New Prefects</h2>
 
         <label for="position">Select Position:</label>
         <select id="position" onchange="fetchCandidates()"></select>
@@ -112,16 +134,17 @@
         <div id="candidates-container" class="candidates-container"></div>
 
         <div id="output"></div>
+
+        <div class="link-buttons">
+            <a href="results.html">View Results</a>
+            <a href="login.html">Login Page</a>
+        </div>
+
     </div>
 
-    <a href="results.html">View Results</a>
-
-  </br>
-
-  <a href="login.html">Login</a>
 
     <script>
-        const apiUrl = 'https://akan-elect.onrender.com'; 
+        const apiUrl = 'http://localhost:8080'; 
         let user;
 
         document.addEventListener('DOMContentLoaded', function () {
