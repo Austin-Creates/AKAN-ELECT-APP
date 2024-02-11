@@ -26,6 +26,17 @@ const voterSchema = new Schema({
         trim: true,
         minlength: 3
     },
+    grade: {
+        type: Number,
+        required: true,
+    },
+    role: {
+        type: String,
+        default: 'voter',
+        enum: ['voter', 'admin']
+    }, 
+    
+       
     }, {
     timestamps: true,
     });

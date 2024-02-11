@@ -7,6 +7,8 @@ const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const excelJS = require("exceljs");
 const dotenv = require("dotenv");
+const multer = require("multer");
+const path = require("path");
 dotenv.config();
 
 const secretKey =  process.env.SECRET_KEY;  
@@ -14,6 +16,7 @@ const secretKey =  process.env.SECRET_KEY;
 const Voter = require("./src/models/voterModel");
 const Vote = require("./src/models/voteModel");
 const Leader = require("./src/models/leaderModel");
+const sendEmail = require("./src/models/utils/emailService");
 
 const mongodb_url = process.env.MONGO_URL;
 
@@ -30,9 +33,21 @@ mongoose
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
+
+let storage  = multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, 'public/uploads');
+  },
+  filename: function (req, file, callback) {
+    let filename = `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
+    callback(null, filename);
+  }
+})
+
+const upload = multer({ storage: storage });
 //ROUTES
 // home route
 app.get("/", (req, res) => {
@@ -43,23 +58,73 @@ app.get("/", (req, res) => {
 app.post("/signup", async (req, res) => {
   try {
 
-    if(!req.body.password || !req.body.email || !req.body.full_name || !req.body.title){
+    console.log(req.body)
+
+    if(!req.body.password || !req.body.email || !req.body.full_name || !req.body.title || !req.body.grade){
       return res.status(400).send({ error: "Please fill all fields" });
     }
     // email validation
     let email = req.body.email;
+    let grade = parseInt(req.body.grade)
+    let existingVoter = await Voter.findOne({
+      email: email,
+    });
+
+    if (existingVoter) {
+      return res.status(404).send({ message: "Voter already exists" });
+    }
+
     // example of email extension @akesk.org or @student.akesk.org
     let emailExtension = email.split("@")[1];
     let emailValidation =
       emailExtension === "akesk.org" || emailExtension === "student.akesk.org";
-    console.log(emailValidation);
     if (!emailValidation) {
       return res.status(500).send({ error: "Invalid email" });
     }
 
     req.body.password = bcrypt.hashSync(req.body.password, 10);
-    const voter = new Voter(req.body);
+    const voter = new Voter({
+      full_name: req.body.full_name,
+      email: req.body.email,
+      password: req.body.password,
+      title: req.body.title,
+      grade: grade,
+      role: req.body.role || "voter",
+    
+    });
     await voter.save();
+    res.status(200).send({ voter });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+// bulk voter signup
+app.post("/bulk/signup", async (req, res) => {
+  try {
+    let voters = [
+      {
+       "email": "dickensjuma13@gmail.com",
+      "password": "password123",
+      "title":"teacher",
+      "full_name": "Dickens Juma",
+      "grade": 1,
+       "role": "admin" 
+      }
+  ]
+    console.log(voters)
+    let newVoters = [];
+    voters.forEach((voter) => {
+      // send email to the voters to send them their password
+    
+      sendEmail(voter, "Voter Registration");
+      voter.password = bcrypt.hashSync(voter.password, 10);
+      newVoters.push(voter);
+    });
+u
+    const voter = await Voter.insertMany(newVoters);
+   
+
     res.status(200).send({ voter });
   } catch (error) {
     res.status(400).send(error);
@@ -76,7 +141,6 @@ app.post("/login", async (req, res) => {
 
     const { email, password } = req.body;
 
-    console.log(email, password);
 
     if (!email || !password) {
       return res.status(400).json({ error: "Please provide an email and password" });
@@ -92,7 +156,6 @@ app.post("/login", async (req, res) => {
     // Compare the provided password with the hashed password
     const passwordMatch = await bcrypt.compare(password, voter.password);
 
-    console.log("PASSWORD",passwordMatch);
 
     if (passwordMatch) {
       // Generate JWT token
@@ -101,7 +164,7 @@ app.post("/login", async (req, res) => {
         secretKey,
         { expiresIn: "1h" }
       );
-
+     
       return res.status(200).json({ voter, token });
     } else {
       return res.status(500).json({ error: "Invalid password" });
@@ -181,9 +244,17 @@ app.get("/positions", async (req, res) => {
 });
 
 // create a leader
-app.post("/leader", async (req, res) => {
+app.post("/leader", upload.single('photo') ,async (req, res) => {
   try {
-    console.log("LEADER BODY REQ", req.body);
+  
+    console.log(req.file)
+    req.body.photo = req.file.path;
+
+   //remove the public from the path
+    req.body.photo = req.body.photo.replace("public/", "");
+    console.log(req.body.photo)
+
+
     if(!req.body.voter || !req.body.position || !req.body.photo){
       return res.status(400).send({ error: "Please fill all fields" });
     }
@@ -250,7 +321,6 @@ app.get("/all/leaders", async (req, res) => {
       });
     }
 
-    console.log(leaders);
     if (!leaders) {
       return res.status(404).send({ message: "Leaders not found" });
     }
@@ -263,7 +333,6 @@ app.get("/all/leaders", async (req, res) => {
 app.get("/leaders", async (req, res) => {
   try {
     const position = req.params.position || req.query.position;
-    console.log(position);
 
     let leaders = await Leader.find({ position }).populate("voter");
 
@@ -275,7 +344,6 @@ app.get("/leaders", async (req, res) => {
 
 app.post("/vote", async (req, res) => {
   try {
-    console.log(req.body);
     if(!req.body.voter || !req.body.leader){
       return res.status(400).send({ error: "Please fill all fields" });
     }
@@ -286,7 +354,6 @@ app.post("/vote", async (req, res) => {
       return res.status(404).send({ message: "Voter not found" });
     }
     let leader = await Leader.findById(req.body.leader); // john
-    console.log(leader);
     if (!leader) {
       return res.status(404).send({ message: "Leader not found" });
     }
@@ -418,6 +485,8 @@ app.get("/votes/excel", async (req, res) => {
   }
 
 });
+
+
 
 app.listen(8080, () => {
   console.log("Server is listening on port 8080");

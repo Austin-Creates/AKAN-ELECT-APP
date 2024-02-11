@@ -68,14 +68,15 @@
     <h1>Admin Nomination</h1>
 
     <div class="container">
+        
         <label for="search">Search Voter:</label>
         <input type="text" id="search" oninput="searchVoters()" placeholder="Type to search">
 
         <label for="voter">Select Voter:</label>
         <select id="voter"></select>
 
-        <label for="photo">Upload Photo URL:</label>
-        <input type="text" id="photo" placeholder="Enter photo URL eg. https://example.com/photo.jpg">
+        <label for="photo">Upload Photo:</label>
+        <input type="file" id="photo" accept="image/*">
 
         <label for="position">Select Position:</label>
         <select id="position"></select>
@@ -87,7 +88,7 @@
 
     <script>
          const apiUrl = 'https://akan-elect.onrender.com'; 
-    //    let apiUrl = "http://localhost:8080";
+     //let apiUrl = "http://localhost:8080";
         let allVoters = [];
 
         // Fetch positions and populate the position dropdown
@@ -135,31 +136,34 @@
 
         function nominateLeader() {
             const voter = document.getElementById('voter').value;
-            const photo = document.getElementById('photo').value;
+            const photoInput = document.getElementById('photo')
             const position = document.getElementById('position').value;
 
+
+            console.log("photoInput",photoInput)
+
             // Check if a photo is selected
-            if (!photo) {
-                alert('Please select a photo for the nominated leader.');
-                return;
-            }
+            if (!photoInput.files || photoInput.files.length === 0) {
+            alert('Please select a photo for the nominated leader.');
+            return;
+        }
 
             // Make a request to your backend to nominate the selected voter as a leader
             // Modify this part based on your backend API
             const formData = new FormData();
             formData.append('voter', voter);
-            formData.append('photo', photo);
+            formData.append("photo", photoInput.files[0]);
+            // formData.append('photo', photoInput.files[0]);
             formData.append('position', position)
-
-
-            console.log('formData', formData);
+            
+            console.log("====formData ====",voter,photoInput.files[0],photoInput.files[0].name,position)                        
 
             fetch(`${apiUrl}/leader`, {
                 method: 'POST',
-                body: JSON.stringify({ voter, photo, position }),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                body: formData,
+                // headers: {
+                //     'Content-Type': 'multipart/form-data',
+                // },
             })
                 .then((response) => response.json())
                 .then((data) => {

@@ -1,262 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AKAN STUDENT GVMT ELECTIONS</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f4f4f4;
+      }
 
-        h1, h2 {
-            text-align: center;
-            color: #333;
-        }
+      h1,
+      h2 {
+        text-align: center;
+        color: #333;
+      }
 
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+      .container {
+        max-width: 800px;
+        margin: auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
 
-        .candidates-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
+      .candidates-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
 
-        .candidate {
-            width: calc(30% - 20px);
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            box-sizing: border-box;
-        }
+      .candidate {
+        width: calc(30% - 20px);
+        margin-bottom: 20px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+      }
 
-        .candidate img {
-            border-radius: 50%;
-            margin-bottom: 10px;
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            display: block;
-            margin: 0 auto; /* Center the image */
-        }
+      .candidate img {
+        border-radius: 50%;
+        margin-bottom: 10px;
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        display: block;
+        margin: 0 auto; /* Center the image */
+      }
 
-        .candidate-details {
-            text-align: center;
-        }
+      .candidate-details {
+        text-align: center;
+      }
 
-        .candidate-details h3 {
-            margin: 0;
-            color: #333;
-        }
+      .candidate-details h3 {
+        margin: 0;
+        color: #333;
+      }
 
-        .candidate-details p {
-            margin: 8px 0;
-            color: #777;
-        }
+      .candidate-details p {
+        margin: 8px 0;
+        color: #777;
+      }
 
-        .progress-container {
-            margin-top: 10px;
-        }
+      .progress-container {
+        margin-top: 10px;
+      }
 
-        button {
-            background-color: #3498db;
-            color: #fff;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+      button {
+        background-color: #3498db;
+        color: #fff;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
 
-        button:hover {
-            background-color: #2980b9;
-        }
+      button:hover {
+        background-color: #2980b9;
+      }
 
-        label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-            color: #333;
-        }
+      label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+        color: #333;
+      }
 
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
+      select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
 
-        .link-buttons {
-            text-align: center;
-            margin-top: 20px;
-        }
+      .link-buttons {
+        text-align: center;
+        margin-top: 20px;
+      }
 
-        .link-buttons a {
-            display: inline-block;
-            background-color: #4CAF50; /* Green */
-            color: #fff;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 16px;
-            margin: 0 10px;
-        }
+      .link-buttons a {
+        display: inline-block;
+        background-color: #4caf50; /* Green */
+        color: #fff;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 16px;
+        margin: 0 10px;
+      }
 
-        .link-buttons a:hover {
-            background-color: #45A049; /* Darker green */
+      .link-buttons a:hover {
+        background-color: #45a049; /* Darker green */
+      }
+
+        #resultsButton {
+            display: none;
         }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>AKAN STUDENT GOVERNMENT ELECTION</h1>
 
     <div class="container">
-        <h2>Vote for Your New Prefects</h2>
+      <h2>Vote for Your New Prefects</h2>
 
-        <label for="position">Select Position:</label>
-        <select id="position" onchange="fetchCandidates()"></select>
+      <label for="position">Select Position:</label>
+      <select id="position" onchange="fetchCandidates()"></select>
 
-        <div id="candidates-container" class="candidates-container"></div>
+      <div id="candidates-container" class="candidates-container"></div>
 
-        <div id="output"></div>
+      <div id="output"></div>
 
-        <div class="link-buttons">
-            <a href="results.html">View Results</a>
-            <a href="login.html">Login Page</a>
-        </div>
-
+      <div class="link-buttons">
+        <a href="results.html" id="resultsButton" >View Results</a>
+        <a href="login.html">Login Page</a>
+      </div>
     </div>
 
-
     <script>
-        // const apiUrl = 'http://localhost:8080'; 
-        const apiUrl = 'https://akan-elect.onrender.com';
-        let user;
+      //const apiUrl = "http://localhost:8080";
+      const apiUrl = 'https://akan-elect.onrender.com';
+      let user;
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // Retrieve user information from local storage
-            user = JSON.parse(localStorage.getItem('user'));
-            console.log(user);
+      document.addEventListener("DOMContentLoaded", function () {
+        // Retrieve user information from local storage
+        user = JSON.parse(localStorage.getItem("user"));
 
-            if (user) {
-                // Display user information on the page
-                const userInfo = document.createElement('p');
-                userInfo.textContent = `🟢 Online: ${user.full_name}`;
-                document.body.insertBefore(userInfo, document.body.firstChild);
-            }
-        });
+        if (user) {
+          // Display user information on the page
+          const userInfo = document.createElement("p");
+          userInfo.textContent = `🟢 Online: ${user.full_name}`;
+          document.body.insertBefore(userInfo, document.body.firstChild);
+     
 
-        // Fetch positions and populate the position dropdown
-        fetch(`${apiUrl}/positions`)
-            .then((response) => response.json())
-            .then((data) => {
-                const positionDropdown = document.getElementById('position');
-                data.positions.forEach((position) => {
-                    const option = document.createElement('option');
-                    option.value = position.position;
-                    option.textContent = position.position;
-                    positionDropdown.appendChild(option);
-                });
 
-                // Fetch candidates when the page loads
-                fetchCandidates();
-            })
-            .catch((error) => console.error('Error fetching positions:', error));
-
-        function fetchCandidates() {
-            const selectedPosition = document.getElementById('position').value;
-            fetchCandidatesByPosition(selectedPosition);
+          console.log(user.role);
+          // show the results page button  when user on localStorage role is admin
+          if (user.role === "admin") {
+            document.getElementById('resultsButton').style.display = 'inline-block';
+          }
         }
+      });
 
-        function fetchCandidatesByPosition(position) {
-            fetch(`${apiUrl}/leaders?position=${position}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    const candidatesContainer = document.getElementById('candidates-container');
-                    candidatesContainer.innerHTML = ''; // Clear existing candidates
+      // Fetch positions and populate the position dropdown
+      fetch(`${apiUrl}/positions`)
+        .then((response) => response.json())
+        .then((data) => {
+          const positionDropdown = document.getElementById("position");
+          data.positions.forEach((position) => {
+            const option = document.createElement("option");
+            option.value = position.position;
+            option.textContent = position.position;
+            positionDropdown.appendChild(option);
+          });
 
-                    data.leaders.forEach((leader) => {
-                        const candidateCard = createCandidateCard(leader);
-                        candidatesContainer.appendChild(candidateCard);
-                    });
-                })
-                .catch((error) => console.error('Error fetching candidates:', error));
-        }
+          // Fetch candidates when the page loads
+          fetchCandidates();
+        })
+        .catch((error) => console.error("Error fetching positions:", error));
 
-        function createCandidateCard(leader) {
-            const candidateCard = document.createElement('div');
-            candidateCard.classList.add('candidate');
+      function fetchCandidates() {
+        const selectedPosition = document.getElementById("position").value;
+        fetchCandidatesByPosition(selectedPosition);
+      }
 
-            const candidateImage = document.createElement('img');
-            candidateImage.src = leader.photo;
-            candidateImage.alt = leader.voter.full_name;
-            candidateCard.appendChild(candidateImage);
+      function fetchCandidatesByPosition(position) {
+        fetch(`${apiUrl}/leaders?position=${position}`)
+          .then((response) => response.json())
+          .then((data) => {
+            const candidatesContainer = document.getElementById(
+              "candidates-container"
+            );
+            candidatesContainer.innerHTML = ""; // Clear existing candidates
 
-            const candidateDetails = document.createElement('div');
-            candidateDetails.classList.add('candidate-details');
+            data.leaders.forEach((leader) => {
+              const candidateCard = createCandidateCard(leader);
+              candidatesContainer.appendChild(candidateCard);
+            });
+          })
+          .catch((error) => console.error("Error fetching candidates:", error));
+      }
 
-            const candidateName = document.createElement('h3');
-            candidateName.textContent = leader.voter.full_name;
-            candidateDetails.appendChild(candidateName);
+      function createCandidateCard(leader) {
+        const candidateCard = document.createElement("div");
+        candidateCard.classList.add("candidate");
 
-            const candidatePosition = document.createElement('p');
-            candidatePosition.textContent = `Position: ${leader.position}`;
-            candidateDetails.appendChild(candidatePosition);
+        const candidateImage = document.createElement("img");
+        candidateImage.src = leader.photo;
+        candidateImage.alt = leader.voter.full_name;
+        candidateCard.appendChild(candidateImage);
 
+        const candidateDetails = document.createElement("div");
+        candidateDetails.classList.add("candidate-details");
 
-            const voteButton = document.createElement('button');
-            voteButton.textContent = 'Vote';
-            voteButton.onclick = () => vote(leader._id);
-            candidateDetails.appendChild(voteButton);
+        const candidateName = document.createElement("h3");
+        candidateName.textContent = leader.voter.full_name;
+        candidateDetails.appendChild(candidateName);
 
-            candidateCard.appendChild(candidateDetails);
+        const candidatePosition = document.createElement("p");
+        candidatePosition.textContent = `Position: ${leader.position}`;
+        candidateDetails.appendChild(candidatePosition);
 
-            return candidateCard;
-        }
+        const voteButton = document.createElement("button");
+        voteButton.textContent = "Vote";
+        voteButton.onclick = () => vote(leader._id);
+        candidateDetails.appendChild(voteButton);
 
-        function vote(candidateId) {
-            console.log(`Vote for candidate with ID ${candidateId}`);
-            const voter = user._id;
+        candidateCard.appendChild(candidateDetails);
 
-            fetch(`${apiUrl}/vote`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ voter, leader: candidateId }),
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    document.getElementById('output').innerText = `${JSON.stringify(data.message, null, 2)}`;
+        return candidateCard;
+      }
 
-                 
-                    // clear the output after 2 seconds
-                    setTimeout(() => {
-                        document.getElementById('output').innerText = '';
-                    }, 2000);
+      function vote(candidateId) {
+        console.log(`Vote for candidate with ID ${candidateId}`);
+        const voter = user._id;
 
-                })
-                .catch((error) => {
-                    document.getElementById('output').innerText = `Error: ${error.message}`;
-                });
-        }
+        fetch(`${apiUrl}/vote`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ voter, leader: candidateId }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("output").innerText = `${JSON.stringify(
+              data.message,
+              null,
+              2
+            )}`;
 
-    
+            // clear the output after 2 seconds
+            setTimeout(() => {
+              document.getElementById("output").innerText = "";
+            }, 2000);
+          })
+          .catch((error) => {
+            document.getElementById(
+              "output"
+            ).innerText = `Error: ${error.message}`;
+          });
+      }
     </script>
-</body>
+  </body>
 </html>
